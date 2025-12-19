@@ -98,7 +98,7 @@ Creates a new incident and returns its ID.
 Retrieves current lifecycle state and timeline for a given incident.
 
 ```typescript
-// State Schema (TypeScript)
+### State Schema
 
 interface IncidentTimeline {
     event: "CREATED" | "CLASSIFIED" | "ASSIGNED" | "ESCALATED" | "RESOLVED";
@@ -123,39 +123,6 @@ interface PulseOpsState {
         pendingIds: string[];
     };
 }
-```
-
-The code block already has a dark background by default in standard markdown renderers. If you need a custom background, you'll need to use HTML:
-
-```html
-<div style="background-color: #000; padding: 16px; border-radius: 8px; overflow-x: auto;">
-  <pre style="color: #fff; margin: 0;"><code class="language-typescript">// State Schema (TypeScript)
-
-interface IncidentTimeline {
-    event: "CREATED" | "CLASSIFIED" | "ASSIGNED" | "ESCALATED" | "RESOLVED";
-    timestamp: string;
-    details?: Record<string, unknown>;
-}
-
-interface Incident {
-    title: string;
-    description: string;
-    priority: "low" | "medium" | "high" | "critical";
-    assignedTeam: string;
-    assignedAt: string;
-    escalatedAt?: string;
-    resolvedAt?: string;
-    timeline: IncidentTimeline[];
-}
-
-interface PulseOpsState {
-    incidents: Record<string, Incident>;
-    escalation: {
-        pendingIds: string[];
-    };
-}
-</code></pre>
-</div>
 ```
 
 ## Tech Stack
@@ -165,9 +132,9 @@ interface PulseOpsState {
 - **Node.js** – JavaScript/TypeScript runtime environment
 
 ## Running Locally
-npm install
-motia generate-types
-npm run dev
+- npm install
+- motia generate-types
+- npm run dev
 ```bash
 # Access Workbench UI
 open http://localhost:3000
