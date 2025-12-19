@@ -12,7 +12,7 @@ const inputSchema = z.object({
 export const config: EventConfig = {
   name: "IncidentClassifier",
   type: "event",
-  description: "Classifies incident priority",
+  description: "Classifies incident priority and category",
   subscribes: ["incident-created"],
   emits: ["incident-classified"],
   flows: ["incident-flow"],
@@ -25,6 +25,9 @@ export const handler: Handlers["IncidentClassifier"] = async (input, ctx) => {
 
   const text = `${title} ${description ?? ""}`.toLowerCase();
 
+  //
+  // PRIORITY CLASSIFICATION
+  //
   let priority: "HIGH" | "MEDIUM" | "LOW" = "LOW";
 
   if (text.includes("down") || text.includes("outage")) {
@@ -37,7 +40,32 @@ export const handler: Handlers["IncidentClassifier"] = async (input, ctx) => {
     priority = "HIGH";
   }
 
-  logger.info("Incident classified", { incidentId, priority });
+  //
+  // CATEGORY ROUTING
+  //
+  let category: "INFRA" | "APP" | "SECURITY" | "GENERAL" = "GENERAL";
+
+  if (
+    text.includes("server") ||
+    text.includes("cpu") ||
+    text.includes("disk") ||
+    text.includes("memory")
+  ) {
+    category = "INFRA";
+  } else if (
+    text.includes("api") ||
+    text.includes("service") ||
+    text.includes("deploy")
+  ) {
+    category = "APP";
+  } else if (
+    text.includes("breach") ||
+    text.includes("attack") ||
+    text.includes("unauthorized") ||
+    text.includes("security")
+  ) {
+    category = "SECURITY";
+  }
 
   const prevState = await state.get("incidents", incidentId);
   const prev =
@@ -53,8 +81,18 @@ export const handler: Handlers["IncidentClassifier"] = async (input, ctx) => {
     ...prev,
     status: "CLASSIFIED",
     priority,
+    category,
     classifiedAt: time,
-    timeline: [...timeline, { event: "CLASSIFIED", priority, at: time }],
+    timeline: [
+      ...timeline,
+      { event: "CLASSIFIED", priority, category, at: time },
+    ],
+  });
+
+  logger.info("Incident classified", {
+    incidentId,
+    priority,
+    category,
   });
 
   await emit({

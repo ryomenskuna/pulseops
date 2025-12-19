@@ -9,7 +9,7 @@ const inputSchema = z.object({
 export const config: EventConfig = {
   name: "IncidentClassified",
   type: "event",
-  description: "Handles classified incidents and assigns ownership",
+  description: "Assigns ownership based on category and priority",
   subscribes: ["incident-classified"],
   emits: [],
   flows: ["incident-flow"],
@@ -20,15 +20,33 @@ export const handler: Handlers["IncidentClassified"] = async (input, ctx) => {
   const { incidentId, priority } = input;
   const { logger, state } = ctx;
 
+  const prevState = await state.get("incidents", incidentId);
+  const prev =
+    typeof prevState === "object" && prevState !== null ? prevState : {};
+
+  const category =
+    typeof prevState === "object" &&
+    prevState !== null &&
+    "category" in prevState
+      ? (prevState as any).category
+      : "GENERAL";
+
+  //
+  // TEAM ROUTING
+  //
   let assignedTeam = "L1-SUPPORT";
+
+  if (category === "INFRA") {
+    assignedTeam = "INFRA-OPS";
+  } else if (category === "APP") {
+    assignedTeam = "APP-DEV";
+  } else if (category === "SECURITY") {
+    assignedTeam = "SECURITY-OPS";
+  }
 
   if (priority === "HIGH") {
     assignedTeam = "ON-CALL-SRE";
   }
-
-  const prevState = await state.get("incidents", incidentId);
-  const prev =
-    typeof prevState === "object" && prevState !== null ? prevState : {};
 
   const timeline = Array.isArray((prev as any).timeline)
     ? (prev as any).timeline
@@ -40,15 +58,15 @@ export const handler: Handlers["IncidentClassified"] = async (input, ctx) => {
     ...prev,
     status: "ASSIGNED",
     priority,
+    category,
     assignedTeam,
     assignedAt: time,
     timeline: [
       ...timeline,
-      { event: "ASSIGNED", team: assignedTeam, at: time },
+      { event: "ASSIGNED", team: assignedTeam, category, at: time },
     ],
   });
 
-  // track for escalation evaluation
   if (priority === "HIGH") {
     const pending = await state.get("escalation", "pendingIds");
     const arr = Array.isArray(pending) ? pending : [];
@@ -58,6 +76,7 @@ export const handler: Handlers["IncidentClassified"] = async (input, ctx) => {
   logger.info("Incident assigned", {
     incidentId,
     priority,
+    category,
     assignedTeam,
   });
 };
