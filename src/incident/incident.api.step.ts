@@ -28,7 +28,7 @@ export const config: ApiRouteConfig = {
 export const handler: Handlers["IncidentAPI"] = async (input, ctx) => {
   const { emit, logger, state } = ctx;
 
-  // ✅ Validate request body manually (Motia way)
+  //validating request body manually
   const parsed = bodySchema.safeParse(input.body);
   if (!parsed.success) {
     return {
@@ -50,7 +50,7 @@ export const handler: Handlers["IncidentAPI"] = async (input, ctx) => {
     source,
   });
 
-  // Initialize incident state
+  //incident state
   await state.set("incidents", incidentId, {
     status: "CREATED",
     title,

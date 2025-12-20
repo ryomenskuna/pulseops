@@ -1,11 +1,11 @@
 PulseOps – Event-Driven Incident Management Backend
 
-# ## Overview
+## Overview
 *PulseOps is a backend system that ingests, classifies, assigns, tracks, and automatically escalates operational incidents through event-driven workflows powered by Motia. Incidents transition through well-defined lifecycle stages and persist timeline history for auditability and debugging.*
 
 *The architecture separates responsibilities using Motia Steps, enabling independent development and scaling of ingestion, classification, assignment, and escalation processes.*
 
-# ## Problem
+## Problem
 *Distributed systems experience outages, slowdowns, and anomalies. Manual triage adds latency and inconsistency to response processes. A backend capable of automated prioritization and routing improves reliability and incident MTTR.*
 
 ## Solution

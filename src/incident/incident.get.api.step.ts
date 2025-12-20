@@ -7,7 +7,7 @@ export const config: ApiRouteConfig = {
   path: '/incident/:id',
   method: 'GET',
   description: 'Fetch incident by id',
-  emits: [], // ✅ REQUIRED by Motia
+  emits: [],
   flows: ['incident-flow'],
   responseSchema: {
     200: z.object({

@@ -22,7 +22,7 @@ export const handler: Handlers["IncidentEscalationChecker"] = async (ctx) => {
     const raw = await state.get("incidents", incidentId);
     const incident = typeof raw === "object" && raw !== null ? raw as any : {};
 
-    // skip if status already escalated or resolved
+    // skipping if status already escalated or resolved
     if (incident.status !== "ASSIGNED") continue;
 
     const assignedAtMs = new Date(incident.assignedAt).getTime();
