@@ -101,7 +101,7 @@ Retrieves current lifecycle state and timeline for a given incident.
 ### State Schema
 
 interface IncidentTimeline {
-    event: "CREATED" | "CLASSIFIED" | "ASSIGNED" | "ESCALATED" | "RESOLVED";
+    event: "CREATED" | "CLASSIFIED" | "ASSIGNED" | "ESCALATED";
     timestamp: string;
     details?: Record<string, unknown>;
 }
@@ -109,7 +109,7 @@ interface IncidentTimeline {
 interface Incident {
     title: string;
     description: string;
-    priority: "low" | "medium" | "high" | "critical";
+    priority: "low" | "medium" | "high";
     assignedTeam: string;
     assignedAt: string;
     escalatedAt?: string;
@@ -139,20 +139,8 @@ interface PulseOpsState {
 # Access Workbench UI
 open http://localhost:3000
 
-# Run tests
-npm run test
-
-# Build for production
-npm run build
-
 # Type check
 npm run type-check
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
 
 # Clean build artifacts
 npm run clean
